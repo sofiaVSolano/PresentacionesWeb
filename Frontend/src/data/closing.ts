@@ -68,7 +68,7 @@ export const cv = {
 
 export const contactCopy = {
   title: 'Hablemos',
-  text: 'Si algo de lo que viste te sirve, escríbeme. Respondo a todo.',
+  text: '¿Tienes un proyecto, una idea o una oportunidad en mente? Me encantará escucharte.',
   /** A dónde escribir si el formulario falla o prefieres tu propio correo */
   fallbackEmail: 'ing.sofiavalenciasolano@gmail.com',
 }

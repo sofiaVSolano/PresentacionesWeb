@@ -13,6 +13,91 @@ const HORIZONTAL_MIN = 860
 
 const pad = (n: number) => String(n + 1).padStart(2, '0')
 
+/**
+ * Móvil / vertical: la galería se vuelve una línea de tiempo. La línea se dibuja con el
+ * scroll, cada parada enciende su nodo al alcanzarla y su foto se destapa como un telón.
+ */
+function animateTimeline(track: HTMLElement, cards: HTMLElement[]) {
+  // la línea crece siguiendo al lector: su punta va siempre a la altura de lo que lee
+  ScrollTrigger.create({
+    trigger: track,
+    start: 'top 62%',
+    end: 'bottom 62%',
+    scrub: 0.6,
+    onUpdate: (self) => track.style.setProperty('--line', self.progress.toFixed(4)),
+  })
+
+  cards.forEach((card) => {
+    const frame = card.querySelector<HTMLElement>('.history__frame, .history__closing')
+    const img = card.querySelector<HTMLElement>('.history__frame img')
+    const cover = card.querySelector('.history__frame[data-fit="cover"]') !== null
+    const meta = card.querySelectorAll<HTMLElement>('.history__meta > *')
+
+    // el nodo se enciende cuando la punta de la línea llega a la parada
+    ScrollTrigger.create({
+      trigger: card,
+      start: 'top 62%',
+      end: 'bottom 62%',
+      onToggle: (self) => card.classList.toggle('is-current', self.isActive),
+      onEnter: () => card.classList.add('is-lit'),
+      onLeaveBack: () => card.classList.remove('is-lit'),
+    })
+
+    const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
+    if (frame) {
+      // telón: la foto se descubre de arriba abajo mientras la tarjeta sube
+      tl.fromTo(
+        frame,
+        { clipPath: 'inset(0% 0% 100% 0% round 18px)', y: 40 },
+        {
+          clipPath: 'inset(0% 0% 0% 0% round 18px)',
+          y: 0,
+          duration: 1.1,
+          ease: 'power4.out',
+          clearProps: 'clipPath,transform',
+        },
+        0
+      )
+    }
+    if (img) {
+      // la imagen llega de cerca y se asienta: un zoom suave, como una cámara que enfoca
+      tl.fromTo(
+        img,
+        { scale: 1.35, filter: 'blur(6px)' },
+        {
+          scale: cover ? 1.12 : 1,
+          filter: 'blur(0px)',
+          duration: 1.5,
+          ease: 'power3.out',
+          clearProps: cover ? 'filter' : 'filter,transform',
+        },
+        0
+      )
+    }
+    if (meta.length) {
+      tl.fromTo(
+        meta,
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, stagger: 0.07, ease: 'power3.out', clearProps: 'transform,opacity' },
+        0.35
+      )
+    }
+
+    // paralaje: la foto se desliza dentro de su marco mientras la tarjeta cruza la pantalla
+    if (img && cover) {
+      gsap.fromTo(
+        img,
+        { yPercent: -5 },
+        {
+          yPercent: 5,
+          ease: 'none',
+          scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: true },
+        }
+      )
+    }
+  })
+}
+
 export function History() {
   const sectionRef = useRef<HTMLElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -33,6 +118,17 @@ export function History() {
       const cards = gsap.utils.toArray<HTMLElement>('.history__card')
       const horizontal = !prefersReducedMotion && window.innerWidth >= HORIZONTAL_MIN
 
+      if (!horizontal) {
+        rail.style.display = 'none'
+        if (prefersReducedMotion) {
+          track.style.setProperty('--line', '1')
+          cards.forEach((card) => card.classList.add('is-lit'))
+          return
+        }
+        animateTimeline(track, cards)
+        return
+      }
+
       // Entrada: cada tarjeta se destapa de abajo a arriba, no solo aparece
       cards.forEach((card, i) => {
         gsap.fromTo(
@@ -43,18 +139,13 @@ export function History() {
             opacity: 1,
             clipPath: 'inset(0 0 0% 0 round 18px)',
             duration: 0.8,
-            delay: horizontal ? i * 0.07 : 0,
+            delay: i * 0.07,
             ease: 'power3.out',
             clearProps: 'transform,opacity,clipPath',
-            scrollTrigger: { trigger: horizontal ? section : card, start: 'top 85%', once: true },
+            scrollTrigger: { trigger: section, start: 'top 85%', once: true },
           }
         )
       })
-
-      if (!horizontal) {
-        rail.style.display = 'none'
-        return
-      }
 
       // El scroll vertical empuja la galería de lado: la sección se fija mientras dura
       const distance = () => Math.max(0, track.scrollWidth - stage.clientWidth)
@@ -198,7 +289,7 @@ export function History() {
                     {entry.detail && <p className="history__detail">{entry.detail}</p>}
                     <p className="history__team">
                       <span className="history__team-mark" aria-hidden="true" />
-                      {entry.team?.length ? `En equipo con ${entry.team.join(' y ')}` : 'En equipo'}
+                      En equipo
                     </p>
                   </figcaption>
                 </figure>

@@ -417,6 +417,110 @@
   }
 }
 
+/* ---- Móvil: línea de tiempo animada ---- */
+@media (max-width: 859px) {
+  .history__progress {
+    display: none;
+  }
+
+  /* la línea vive en el margen izquierdo; las tarjetas le dejan sitio */
+  .history__track {
+    --line-x: 9px;
+
+    position: relative;
+    padding-left: calc(var(--space-md) + 30px);
+  }
+
+  /* carril tenue: todo el recorrido */
+  .history__track::before,
+  .history__track::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    bottom: 0;
+    left: calc(var(--space-md) + var(--line-x));
+    width: 2px;
+    margin-left: -1px;
+    border-radius: 2px;
+  }
+
+  .history__track::before {
+    background: rgba(243, 231, 220, 0.1);
+  }
+
+  /* lo recorrido: se dibuja con el scroll y su punta brilla */
+  .history__track::after {
+    background: linear-gradient(to bottom, rgba(158, 38, 55, 0.2), var(--color-garnet) 30%, rgb(224, 138, 162));
+    transform: scaleY(var(--line, 0));
+    transform-origin: top;
+    box-shadow: 0 0 12px rgba(224, 138, 162, 0.55);
+  }
+
+  .history__card {
+    position: relative;
+  }
+
+  /* nodo de cada parada, sobre la línea */
+  .history__card::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: calc(-30px + var(--line-x));
+    z-index: 1;
+    width: 13px;
+    height: 13px;
+    margin-left: -6.5px;
+    border: 1.5px solid rgba(243, 231, 220, 0.3);
+    border-radius: 50%;
+    background: var(--color-carbon);
+    transition:
+      background-color 0.45s var(--ease-editorial),
+      border-color 0.45s var(--ease-editorial),
+      box-shadow 0.45s var(--ease-editorial),
+      transform 0.45s var(--ease-editorial);
+  }
+
+  .history__card.is-lit::before {
+    background: var(--color-garnet);
+    border-color: rgb(224, 138, 162);
+    transform: scale(1.15);
+  }
+
+  /* la parada que estás leyendo late */
+  .history__card.is-current::before {
+    box-shadow: 0 0 0 5px rgba(224, 138, 162, 0.18), 0 0 18px rgba(224, 138, 162, 0.7);
+    animation: history-node-pulse 1.8s ease-in-out infinite;
+  }
+
+  /* y su marco se enciende con el aro granate */
+  .history__frame::after {
+    transition: opacity 0.5s var(--ease-editorial);
+  }
+
+  .history__card.is-current .history__frame::after {
+    opacity: 1;
+  }
+
+  .history__num {
+    transition: color 0.45s var(--ease-editorial);
+  }
+
+  .history__card.is-current .history__num {
+    color: rgb(224, 138, 162);
+  }
+
+  .history__card--closing::before {
+    top: 50%;
+    margin-top: -6.5px;
+  }
+}
+
+@keyframes history-node-pulse {
+  50% {
+    box-shadow: 0 0 0 9px rgba(224, 138, 162, 0.06), 0 0 24px rgba(224, 138, 162, 0.9);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .history__frame {
     transform: none;

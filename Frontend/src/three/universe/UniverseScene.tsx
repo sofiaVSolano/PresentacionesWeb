@@ -171,17 +171,32 @@ function System({
         const r = planets[selectedIndex].size
         const away = s.tmp.copy(p).setY(0).normalize()
         if (away.lengthSq() < 0.01) away.set(0, 0, 1)
+        // Distancia según el lienzo: el planeta (ya agrandado al enfocarlo) ocupa ~30 % del lado
+        // corto de la vista, así no desborda en pantallas verticales ni se pierde en las anchas.
+        const aspect = size.width / Math.max(size.height, 1)
+        const halfTan = Math.tan((camera.fov * Math.PI) / 360)
+        const dist = (r * 1.35) / (0.3 * halfTan * Math.min(aspect, 1))
         // cámara fuera de la órbita, algo por encima, mirando al planeta
         s.camTarget
           .copy(p)
-          .addScaledVector(away, r * 11)
-          .add(s.tmp2.set(0, r * 4.5, 0))
-        // sin ficha lateral (móvil/tablet) la ficha tapa la mitad de abajo: el planeta sube
-        s.lookTarget.copy(p).setY(p.y - (sidePanel ? 0 : r * 3.2))
+          .addScaledVector(away, dist * 0.92)
+          .add(s.tmp2.set(0, dist * 0.38, 0))
+        s.lookTarget.copy(p)
+        // Encuadre: cámara y mirada se trasladan juntas, así el planeta se mueve en pantalla
+        // hacia la zona que la ficha deja libre, sea cual sea el tamaño del lienzo.
+        const halfV = halfTan * dist
         if (sidePanel) {
-          // desplaza el encuadre para que el planeta quede a la izquierda de la ficha
+          // ficha a la derecha: el planeta se centra en el hueco que queda a su izquierda
+          const panelPx = Math.min(420, size.width * 0.92) + 24
           const right = s.tmp2.subVectors(p, s.camTarget).cross(cam.up).normalize()
-          s.camTarget.addScaledVector(right, r * 3.2)
+          const shift = (panelPx / size.width) * halfV * aspect
+          s.camTarget.addScaledVector(right, shift)
+          s.lookTarget.addScaledVector(right, shift)
+        } else {
+          // ficha como hoja inferior: el planeta sube a la franja de arriba, la que queda visible
+          const down = halfV * 0.55
+          s.camTarget.y -= down
+          s.lookTarget.y -= down
         }
       }
     } else {

@@ -59,6 +59,12 @@
   height: clamp(580px, 86vh, 920px);
 }
 
+/* Los hijos de la rejilla pueden encogerse: si no, la tira horizontal de tarjetas (móvil)
+   estira la columna al ancho de todas las tarjetas y el universo se sale de la pantalla */
+.works__explorer > * {
+  min-width: 0;
+}
+
 .works__stage {
   position: relative;
   min-width: 0;
@@ -535,7 +541,7 @@
 @media (max-width: 1023px) {
   /* el universo arriba y la lista debajo, como una tira que se desliza */
   .works__explorer {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
     padding-inline: var(--space-lg);
   }
@@ -592,8 +598,26 @@
   }
 
   .works__stage {
-    height: 72vh;
+    /* en horizontal (móvil acostado) no baja de un alto usable */
+    height: clamp(380px, 72vh, 720px);
     border-radius: 20px;
+  }
+
+  .works__panel {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    max-height: 52vh;
+    padding: var(--space-sm);
+    border-radius: 22px;
+  }
+
+  .works__panel-title {
+    font-size: 2rem;
+  }
+
+  .works__links {
+    flex-wrap: wrap;
   }
 
   .works__card {
