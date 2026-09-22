@@ -4,7 +4,10 @@ services:
       context: ./Backend
     environment:
       CORS_ORIGINS: http://localhost:${FRONTEND_PORT:-5173}
-      # El correo del formulario: se leen del .env de la raíz (ver .env.example)
+      # El correo del formulario: se leen del .env de la raíz (ver .env.example).
+      # Resend es el camino principal; SMTP, el respaldo.
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-}
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}

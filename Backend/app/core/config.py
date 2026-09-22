@@ -7,8 +7,18 @@ class Settings(BaseSettings):
     environment: str = "development"
     cors_origins: str = "http://localhost:5173"
 
-    # ---- Correo del formulario de contacto ----
-    # Los mensajes se envían por SMTP desde la propia cuenta de Sofía. Con Gmail
+    # ---- Correo del formulario de contacto: Resend ----
+    # Camino principal. Va por HTTPS contra api.resend.com, que es lo único que
+    # funciona en Render: la plataforma no deja abrir conexiones SMTP salientes
+    # y el socket muere con "Network is unreachable".
+    resend_api_key: str = ""
+    # Remitente, con un dominio verificado en Resend. Formato "Nombre <correo@dominio>"
+    # o solo "correo@dominio". Ver README.
+    resend_from: str = ""
+    resend_timeout: int = 15
+
+    # ---- Correo del formulario de contacto: SMTP (respaldo) ----
+    # Lo que se usa en local y lo que sigue sirviendo si Resend falla. Con Gmail
     # hace falta una "contraseña de aplicación" (ver README), no la del correo.
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587
@@ -29,8 +39,18 @@ class Settings(BaseSettings):
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     @property
+    def resend_configured(self) -> bool:
+        # Sin destinatario no hay nada que enviar, aunque la clave esté puesta
+        return bool(self.resend_api_key and self.resend_from and self.contact_recipient)
+
+    @property
     def smtp_configured(self) -> bool:
         return bool(self.smtp_host and self.smtp_user and self.smtp_password)
+
+    @property
+    def email_configured(self) -> bool:
+        """Hay al menos un camino de salida: Resend, SMTP o los dos."""
+        return self.resend_configured or self.smtp_configured
 
     @property
     def contact_recipient(self) -> str:

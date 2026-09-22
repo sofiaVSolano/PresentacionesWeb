@@ -103,13 +103,43 @@ Nunca commitear un `.env` con secretos reales.
 
 ## Correo del formulario de contacto
 
-Lo que alguien escribe en el formulario llega al correo de Sofía. El mensaje se
-envía por SMTP **desde su propia cuenta**: el remitente es ella (ningún servidor
-deja firmar con la dirección de otro) y quien escribió va en `Reply-To`, así que
-basta con darle a *Responder* para contestarle directo.
+Lo que alguien escribe en el formulario llega al correo de Sofía. El remitente
+es una dirección propia (ningún servidor deja firmar con la dirección de otro) y
+quien escribió va en `Reply-To`, así que basta con darle a *Responder* para
+contestarle directo.
 
-Para que funcione hace falta una **contraseña de aplicación** de Google — la
-contraseña normal de la cuenta no sirve para SMTP:
+Hay dos caminos de salida y se intentan en este orden:
+
+1. **Resend**, por HTTPS. Es el que funciona en producción: Render no deja abrir
+   conexiones SMTP salientes y el socket muere con `Network is unreachable`.
+2. **SMTP**, de respaldo. Sirve en local y cubre a Resend si se cae.
+
+Si los dos fallan, el mensaje no se da por entregado: el endpoint devuelve 502.
+
+### Resend (principal)
+
+1. Crear una cuenta en [resend.com](https://resend.com) y, en **API Keys**,
+   generar una clave de permiso *Sending access*. Empieza por `re_`.
+2. Verificar un dominio en **Domains** (añadiendo los registros DNS que Resend
+   indica). Sin dominio propio se puede usar `onboarding@resend.dev`, pero solo
+   entrega al correo con el que se abrió la cuenta: vale para probar, no para
+   producción.
+3. Rellenar en `Backend/.env`:
+
+```bash
+RESEND_API_KEY=re_loquesea
+RESEND_FROM=Portafolio de Sofía <contacto@tudominio.com>
+CONTACT_TO=tucorreo@gmail.com
+```
+
+`CONTACT_TO` es obligatorio si no hay SMTP configurado: sin él no hay a dónde
+enviar. La clave se lee **solo** del entorno y nunca sale en los logs ni llega
+al frontend, que sigue hablando únicamente con `POST /api/contact`.
+
+### SMTP (respaldo)
+
+Hace falta una **contraseña de aplicación** de Google — la contraseña normal de
+la cuenta no sirve para SMTP:
 
 1. Cuenta de Google → **Seguridad** → activar **Verificación en 2 pasos**.
 2. En la misma pantalla, **Contraseñas de aplicaciones** → crear una nueva
@@ -132,10 +162,13 @@ cd Backend
 
 Detalles que conviene saber:
 
-- **Sin credenciales configuradas**, en `ENVIRONMENT=development` el mensaje no
-  se envía: se escribe entero en el log del backend y el formulario responde
-  bien, para poder trabajar sin secretos. En producción, en cambio, el envío
-  falla a la vista (502) en vez de perder el mensaje en silencio.
+- **Sin ninguna de las dos vías configurada**, en `ENVIRONMENT=development` el
+  mensaje no se envía: se escribe entero en el log del backend y el formulario
+  responde bien, para poder trabajar sin secretos. En producción, en cambio, el
+  envío falla a la vista (502) en vez de perder el mensaje en silencio.
+- En el log se ve por dónde salió cada mensaje: `entregado por Resend`,
+  `entregado por SMTP`, o el aviso de que Resend falló y se pasó al respaldo.
+  Las credenciales no aparecen nunca.
 - Si el envío falla, **el texto queda igualmente en el log** del backend, y el
   formulario ofrece el correo directo con lo escrito ya dentro.
 - `CONTACT_RATE_LIMIT` (5 por defecto) son los mensajes que se aceptan por IP y

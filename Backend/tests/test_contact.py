@@ -21,6 +21,21 @@ def entorno_limpio(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "environment", "development")
     monkeypatch.setattr(settings, "smtp_user", "")
     monkeypatch.setattr(settings, "smtp_password", "")
+    # Si no, un .env con la clave de Resend puesta haría que los tests
+    # intentaran enviar correo de verdad
+    monkeypatch.setattr(settings, "resend_api_key", "")
+    monkeypatch.setattr(settings, "resend_from", "")
+
+
+def _con_resend(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "resend_api_key", "re_de_mentira")
+    monkeypatch.setattr(settings, "resend_from", "Portafolio <hola@ejemplo.com>")
+    monkeypatch.setattr(settings, "contact_to", "sofia@ejemplo.com")
+
+
+def _con_smtp(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "smtp_user", "sofia@ejemplo.com")
+    monkeypatch.setattr(settings, "smtp_password", "secreto")
 
 
 def test_contact_accepts_valid_message() -> None:
@@ -56,8 +71,7 @@ def test_contact_rate_limits_repeated_messages() -> None:
 
 
 def test_contact_reports_delivery_failure(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(settings, "smtp_user", "sofia@ejemplo.com")
-    monkeypatch.setattr(settings, "smtp_password", "secreto")
+    _con_smtp(monkeypatch)
 
     def falla(_message: object) -> None:
         raise smtplib.SMTPException("el servidor no contesta")
@@ -68,6 +82,72 @@ def test_contact_reports_delivery_failure(monkeypatch: pytest.MonkeyPatch) -> No
     # Un fallo de entrega no puede contarse como éxito: quien escribe tiene que
     # enterarse para poder usar el correo directo que ofrece el formulario.
     assert response.status_code == 502
+
+
+def test_contact_prefers_resend_over_smtp(monkeypatch: pytest.MonkeyPatch) -> None:
+    _con_resend(monkeypatch)
+    _con_smtp(monkeypatch)
+    enviados: list[object] = []
+
+    def resend_ok(payload: object) -> str:
+        enviados.append(payload)
+        return "abc123"
+
+    monkeypatch.setattr(contact_service, "_send_via_resend", resend_ok)
+    monkeypatch.setattr(
+        contact_service,
+        "_deliver",
+        lambda _message: pytest.fail("con Resend funcionando no se toca SMTP"),
+    )
+
+    response = client.post("/api/contact", json=VALID)
+    assert response.status_code == 200
+    assert len(enviados) == 1
+
+
+def test_contact_falls_back_to_smtp_when_resend_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    _con_resend(monkeypatch)
+    _con_smtp(monkeypatch)
+    entregados: list[object] = []
+
+    def resend_falla(_payload: object) -> None:
+        raise RuntimeError("api.resend.com no contesta")
+
+    monkeypatch.setattr(contact_service, "_send_via_resend", resend_falla)
+    monkeypatch.setattr(contact_service, "_deliver", entregados.append)
+
+    response = client.post("/api/contact", json=VALID)
+    assert response.status_code == 200
+    assert len(entregados) == 1
+
+
+def test_contact_fails_when_both_routes_fail(monkeypatch: pytest.MonkeyPatch) -> None:
+    _con_resend(monkeypatch)
+    _con_smtp(monkeypatch)
+
+    def resend_falla(_payload: object) -> None:
+        raise RuntimeError("api.resend.com no contesta")
+
+    def smtp_falla(_message: object) -> None:
+        raise smtplib.SMTPException("el servidor no contesta")
+
+    monkeypatch.setattr(contact_service, "_send_via_resend", resend_falla)
+    monkeypatch.setattr(contact_service, "_deliver", smtp_falla)
+
+    assert client.post("/api/contact", json=VALID).status_code == 502
+
+
+def test_contact_fails_when_resend_fails_and_there_is_no_smtp(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _con_resend(monkeypatch)  # sin _con_smtp: Resend es el único camino
+
+    def resend_falla(_payload: object) -> None:
+        raise RuntimeError("api.resend.com no contesta")
+
+    monkeypatch.setattr(contact_service, "_send_via_resend", resend_falla)
+
+    assert client.post("/api/contact", json=VALID).status_code == 502
 
 
 def test_contact_email_replies_to_the_visitor(monkeypatch: pytest.MonkeyPatch) -> None:
