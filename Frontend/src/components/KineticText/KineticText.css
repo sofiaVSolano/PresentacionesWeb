@@ -1,0 +1,23 @@
+.kinetic {
+  margin: 0;
+}
+
+/* El padding/margin compensado evita que `overflow: hidden` recorte
+   el voladizo de las cursivas de la serif. */
+.kinetic__mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.07em 0.1em;
+  margin: 0 -0.07em;
+}
+
+.kinetic__word {
+  display: inline-block;
+  transform: translateY(115%);
+}
+
+.kinetic__word--accent {
+  color: var(--color-garnet);
+  font-style: italic;
+}

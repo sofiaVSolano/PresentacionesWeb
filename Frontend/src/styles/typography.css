@@ -1,0 +1,72 @@
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+/* Ojo: `span` y `a` NO van aquí — deben heredar, o romperían la serif
+   dentro de los titulares (las palabras enmascaradas son spans). */
+body,
+p,
+button,
+input,
+textarea,
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Título hero / máximo impacto editorial */
+.text-display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 9vw, 7.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+}
+
+/* Títulos de sección ("YO", "MI MENTE"...) */
+.text-display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  line-height: 1.02;
+}
+
+.text-display-md {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* Numeración editorial de secciones: "01 — YO" */
+.text-kicker {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.text-body-lg {
+  font-family: var(--font-body);
+  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.text-body {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.text-caption {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}

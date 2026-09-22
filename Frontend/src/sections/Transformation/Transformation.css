@@ -1,0 +1,176 @@
+.transformation {
+  position: relative;
+  height: 420vh;
+  background: var(--color-bg-deep);
+}
+
+.transformation__pin {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(ellipse 70% 60% at 50% 45%, var(--color-wine), var(--color-bg-deep) 72%);
+}
+
+/* La "ventana" por la que se ve el video; su clip-path se abre con el scroll */
+.transformation__window {
+  position: absolute;
+  inset: 0;
+  background: #d8d8da;
+  will-change: clip-path;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+}
+
+.transformation__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Viñeta burdeos al inicio: ata el video (gris claro) con la paleta del sitio */
+.transformation__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 70% at 50% 45%, transparent 40%, rgba(74, 7, 16, 0.78) 100%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.transformation__kicker {
+  position: absolute;
+  top: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  margin: 0;
+}
+
+/* ---- Textos sincronizados ---- */
+.transformation__captions {
+  position: absolute;
+  left: var(--space-xl);
+  bottom: var(--space-xl);
+  z-index: 3;
+}
+
+.transformation__caption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: max-content;
+  max-width: 70vw;
+  padding: 14px 22px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(243, 231, 220, 0.12);
+  background: rgba(21, 19, 21, 0.74);
+  backdrop-filter: blur(10px);
+  color: var(--color-cream);
+  opacity: 0;
+}
+
+.transformation__caption-step {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(214, 112, 138);
+}
+
+.transformation__caption p {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.4vw, 1.875rem);
+  line-height: 1.15;
+}
+
+/* ---- HUD: fotograma actual y barra de progreso ---- */
+.transformation__hud {
+  position: absolute;
+  right: var(--space-xl);
+  bottom: var(--space-xl);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(243, 231, 220, 0.12);
+  background: rgba(21, 19, 21, 0.74);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: rgba(243, 231, 220, 0.75);
+}
+
+.transformation__bar {
+  width: 110px;
+  height: 2px;
+  background: rgba(243, 231, 220, 0.2);
+  overflow: hidden;
+}
+
+.transformation__bar > div {
+  height: 100%;
+  background: var(--color-garnet);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* ---- Cierre: el blanco final del video se funde en el crema de la sección YO ---- */
+.transformation__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: var(--color-cream);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.transformation__reveal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  margin: 0;
+  width: max-content;
+  max-width: 90vw;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  line-height: 1.1;
+  color: var(--color-void);
+  opacity: 0;
+}
+
+/* Reduced motion: sin pin ni scrub, una sola pantalla con el resultado final */
+.transformation.is-static {
+  height: auto;
+}
+
+.transformation.is-static .transformation__reveal {
+  top: auto;
+  bottom: var(--space-xl);
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  background: rgba(243, 231, 220, 0.9);
+}
+
+@media (max-width: 640px) {
+  .transformation__captions {
+    left: var(--space-md);
+    right: var(--space-md);
+    bottom: var(--space-lg);
+  }
+
+  .transformation__caption {
+    max-width: calc(100vw - 2 * var(--space-md));
+  }
+
+  .transformation__hud {
+    display: none;
+  }
+}

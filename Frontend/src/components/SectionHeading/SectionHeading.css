@@ -1,0 +1,23 @@
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.section-heading__number {
+  color: var(--color-garnet);
+}
+
+.section-heading__rule {
+  display: inline-block;
+  width: 48px;
+  height: 1px;
+  background: var(--color-garnet);
+}

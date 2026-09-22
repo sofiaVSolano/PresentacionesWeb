@@ -1,0 +1,789 @@
+/* Cierre del sitio: el telón final. Lo más oscuro de todo, con luces de
+   escenario que se mueven detrás, cintas de agradecimiento y la firma a
+   tamaño cartel. Todo lo decorativo va en capas con pointer-events: none. */
+.footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-top: var(--space-3xl);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(74, 7, 16, 0.55), transparent 60%),
+    linear-gradient(to bottom, var(--color-void), #080105 70%, #050003);
+}
+
+:where(.footer) :where(h2, p, ul, li) {
+  margin: 0;
+  padding: 0;
+}
+
+.footer ul {
+  list-style: none;
+}
+
+/* ---- Capas de fondo ---- */
+
+/* Tres manchas de luz que se desplazan despacio: el fondo nunca está quieto */
+.footer__aurora {
+  position: absolute;
+  inset: -10% -10% 0;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.footer__blob {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  animation: footer-drift 18s ease-in-out infinite;
+}
+
+.footer__blob--a {
+  top: -12%;
+  left: 50%;
+  width: min(880px, 110vw);
+  aspect-ratio: 1;
+  margin-left: min(-440px, -55vw);
+  background: radial-gradient(circle, rgba(158, 38, 55, 0.5), transparent 62%);
+}
+
+.footer__blob--b {
+  top: 18%;
+  left: -8%;
+  width: min(520px, 70vw);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(122, 16, 32, 0.55), transparent 64%);
+  animation-duration: 23s;
+  animation-delay: -6s;
+}
+
+.footer__blob--c {
+  bottom: 4%;
+  right: -6%;
+  width: min(600px, 80vw);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(224, 138, 162, 0.22), transparent 66%);
+  animation-duration: 27s;
+  animation-delay: -12s;
+}
+
+@keyframes footer-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.12);
+    opacity: 0.75;
+  }
+}
+
+/* Foco de teatro: sigue al puntero (las variables las mueve Footer.tsx) */
+.footer__spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--footer-fx, 50%) var(--footer-fy, 24%),
+    rgba(243, 231, 220, 0.09),
+    transparent 70%
+  );
+}
+
+/* Grano de película: le quita el plástico a los degradados */
+.footer__grain {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.footer .particle-field {
+  z-index: -1;
+}
+
+.footer__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+/* ---- Cabecera ---- */
+.footer__head {
+  max-width: 68ch;
+  margin: 0 auto var(--space-2xl);
+  text-align: center;
+}
+
+.footer__kicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  color: rgb(224, 138, 162);
+}
+
+.footer__kicker-rule {
+  width: clamp(28px, 8vw, 72px);
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(224, 138, 162, 0.7));
+}
+
+.footer__kicker-rule:last-child {
+  background: linear-gradient(to left, transparent, rgba(224, 138, 162, 0.7));
+}
+
+.footer__headline {
+  margin-top: var(--space-md);
+  font-size: clamp(2.2rem, 5.6vw, 4.4rem);
+  line-height: 1.04;
+  text-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Chapa de estado: lo único del pie que cambia solo (la hora es real) */
+/* En bloque, no en flex: al envolverse en dos líneas el punto debe quedar
+   pegado a la primera palabra, no solo en una fila para él. */
+.footer__status {
+  display: inline-block;
+  margin-top: var(--space-lg);
+  padding: var(--space-3xs) var(--space-md);
+  border: 1px solid rgba(224, 138, 162, 0.28);
+  border-radius: var(--radius-full);
+  background: rgba(158, 38, 55, 0.12);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(243, 231, 220, 0.78);
+}
+
+.footer__status-dot {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: var(--space-2xs);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(224, 138, 162);
+  box-shadow: 0 0 0 0 rgba(224, 138, 162, 0.6);
+  animation: footer-pulse 2.4s ease-out infinite;
+}
+
+.footer__status-sep {
+  margin: 0 var(--space-3xs);
+  color: rgba(243, 231, 220, 0.35);
+}
+
+@keyframes footer-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 138, 162, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(224, 138, 162, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 138, 162, 0);
+  }
+}
+
+/* ---- El mensaje en video, montado como una sala ---- */
+.footer__message {
+  max-width: 1240px;
+  margin: 0 auto var(--space-2xl);
+}
+
+.footer__stage {
+  position: relative;
+  padding: var(--space-md);
+  border-radius: calc(var(--radius-lg) + 8px);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(21, 3, 8, 0.72), rgba(10, 2, 6, 0.72)) padding-box,
+    var(--color-metal) border-box;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+  transition: transform var(--duration-slow) var(--ease-editorial);
+}
+
+/* Halo que late detrás del marco, como la luz de la sala */
+.footer__stage-halo {
+  position: absolute;
+  inset: -16%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(158, 38, 55, 0.42), transparent 66%);
+  filter: blur(40px);
+  animation: footer-halo 6.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes footer-halo {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+/* La escena: a la izquierda su voz escrita, a la derecha su cara.
+   Nada se superpone al video, y el video no se amplía nunca por encima de su
+   tamaño real (848 px de ancho): estirarlo es lo que lo vuelve blando. */
+.footer__scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+}
+
+.footer__aside {
+  position: relative;
+  flex: 0 1 300px;
+  min-width: 0;
+  padding-right: var(--space-lg);
+}
+
+/* Hilo metálico entre la voz y la imagen */
+.footer__aside::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(224, 138, 162, 0.5), transparent);
+}
+
+.footer__aside-mark {
+  display: block;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--color-garnet);
+}
+
+.footer__aside-kicker {
+  margin-top: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(224, 138, 162, 0.85);
+}
+
+.footer__aside-quote {
+  margin-top: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.1vw, 1.95rem);
+  line-height: 1.18;
+  color: var(--color-cream);
+}
+
+/* El acento de la frase, en rosa: a este tamaño el granate se apaga sobre el
+   fondo casi negro del pie y la palabra se perdía. */
+.footer__aside-quote .kinetic__word--accent {
+  color: rgb(224, 138, 162);
+}
+
+.footer__aside-rule {
+  display: block;
+  width: 46px;
+  height: 1px;
+  margin: var(--space-md) 0 var(--space-sm);
+  background: var(--color-metal);
+}
+
+.footer__aside-meta {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 231, 220, 0.62);
+}
+
+.footer__aside-meta--soft {
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  font-size: 0.8125rem;
+  color: rgba(243, 231, 220, 0.4);
+}
+
+.footer__panel {
+  position: relative;
+  flex: 0 1 848px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(243, 231, 220, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  background: #0a0206;
+}
+
+/* La proporción exacta del archivo (848x478): así reserva su hueco antes de
+   cargar —con `preload="none"` no hay metadatos hasta que alguien le da play—
+   y no se recorta ni un píxel. */
+.footer__panel video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 424 / 239;
+  background: #0a0206;
+}
+
+/* Botón de reproducción sobre el póster */
+.footer__play {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  background: linear-gradient(to top, rgba(10, 2, 6, 0.88), rgba(10, 2, 6, 0.2));
+  color: var(--color-cream);
+}
+
+.footer__play-disc {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border: 1.5px solid rgba(243, 231, 220, 0.6);
+  border-radius: 50%;
+  background: rgba(21, 3, 8, 0.3);
+  backdrop-filter: blur(2px);
+  transition:
+    transform var(--duration-base) var(--ease-editorial),
+    border-color var(--duration-base) var(--ease-editorial),
+    background var(--duration-base) var(--ease-editorial);
+}
+
+/* Ondas que salen del aro: lo que hace que el ojo vaya ahí y no a otro lado */
+.footer__play-ripple {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid rgba(224, 138, 162, 0.55);
+  animation: footer-ripple 2.8s var(--ease-editorial) infinite;
+  pointer-events: none;
+}
+
+.footer__play-ripple--late {
+  animation-delay: 1.4s;
+}
+
+@keyframes footer-ripple {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+.footer__play-disc svg {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  margin-left: 4px; /* el triángulo pesa a la izquierda */
+}
+
+.footer__play:hover .footer__play-disc,
+.footer__play:focus-visible .footer__play-disc {
+  transform: scale(1.12);
+  border-color: rgb(224, 138, 162);
+  background: rgba(158, 38, 55, 0.35);
+}
+
+.footer__play-label {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(243, 231, 220, 0.85);
+}
+
+.footer__message-note {
+  margin-top: var(--space-sm);
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* ---- Cintas cruzadas ---- */
+.footer__bands {
+  position: relative;
+  z-index: 1;
+  margin: var(--space-2xl) 0;
+  padding: var(--space-md) 0;
+  transform: rotate(-1.6deg);
+}
+
+/* Se salen por los lados: al estar giradas, al ras dejarían esquinas vacías */
+.footer__bands .marquee {
+  width: 106%;
+  margin-left: -3%;
+}
+
+.footer__band--lead {
+  border-color: rgba(224, 138, 162, 0.26);
+  background: linear-gradient(to right, transparent, rgba(158, 38, 55, 0.22), transparent);
+}
+
+.footer__band--lead .marquee__item {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4.6vw, 3.4rem);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--color-cream);
+}
+
+/* Los asteriscos van en contorno; las palabras, macizas: la cinta respira */
+.footer__band--lead .marquee__item:nth-child(even) {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(224, 138, 162, 0.75);
+}
+
+.footer__band--sub {
+  border-top: 0;
+  background: transparent;
+}
+
+.footer__band--sub .marquee__item {
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  color: rgba(243, 231, 220, 0.4);
+}
+
+/* ---- Pie: redes grandes, firma y vuelta arriba ---- */
+.footer__bottom {
+  padding-bottom: var(--space-lg);
+}
+
+/* Las redes dejan de ser enlaces pequeños y pasan a ser renglones de cartel */
+.footer__links {
+  border-top: 1px solid var(--color-border);
+}
+
+.footer__links li {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.footer__links a {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-sm);
+  overflow: hidden;
+  color: var(--color-text-muted);
+  transition: color var(--duration-base) var(--ease-editorial);
+}
+
+/* Relleno que entra desde la izquierda al pasar por encima */
+.footer__links a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to right, rgba(122, 16, 32, 0.75), rgba(158, 38, 55, 0.12));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-base) var(--ease-editorial);
+}
+
+.footer__links a:hover::before,
+.footer__links a:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.footer__link-index {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  color: rgba(243, 231, 220, 0.3);
+}
+
+.footer__link-label {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.6vw, 2.6rem);
+  line-height: 1;
+  color: rgba(243, 231, 220, 0.82);
+  transition: transform var(--duration-base) var(--ease-editorial);
+}
+
+.footer__links a:hover .footer__link-label,
+.footer__links a:focus-visible .footer__link-label {
+  transform: translateX(10px);
+  color: var(--color-cream);
+}
+
+.footer__link-handle {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgba(243, 231, 220, 0.4);
+}
+
+.footer__link-arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--duration-base) var(--ease-editorial);
+}
+
+.footer__links a:hover .footer__link-arrow,
+.footer__links a:focus-visible .footer__link-arrow {
+  transform: translate(4px, -4px);
+  color: var(--color-cream);
+}
+
+.footer__sign {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding-top: var(--space-xl);
+}
+
+.footer__name {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  color: var(--color-cream);
+}
+
+/* Botón redondo con el texto girando alrededor de la flecha */
+.footer__top {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  transition:
+    color var(--duration-base) var(--ease-editorial),
+    border-color var(--duration-base) var(--ease-editorial),
+    background var(--duration-base) var(--ease-editorial);
+}
+
+.footer__top:hover,
+.footer__top:focus-visible {
+  color: var(--color-cream);
+  border-color: rgba(224, 138, 162, 0.6);
+  background: rgba(158, 38, 55, 0.18);
+}
+
+.footer__top-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  animation: footer-spin 16s linear infinite;
+}
+
+.footer__top-ring text {
+  font-family: var(--font-body);
+  font-size: 9.5px;
+  letter-spacing: 2.1px;
+  text-transform: uppercase;
+}
+
+.footer__top:hover .footer__top-ring {
+  animation-duration: 7s;
+}
+
+@keyframes footer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.footer__top-arrow {
+  width: 22px;
+  height: 22px;
+  transition: transform var(--duration-base) var(--ease-editorial);
+}
+
+.footer__top:hover .footer__top-arrow {
+  transform: translateY(-5px);
+}
+
+/* ---- La firma a tamaño cartel ---- */
+.footer__wordmark {
+  position: relative;
+  z-index: 1;
+  margin-top: var(--space-xl);
+  padding: 0 var(--space-md);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 11.5vw, 11rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.footer__wordmark-base {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(243, 231, 220, 0.22);
+}
+
+/* La misma palabra encima, encendida y recortada por el scroll (ver Footer.tsx).
+   El degradado vuelve a subir de brillo al final: si acabara en vino oscuro,
+   "Valencia" quedaría apagado sobre el fondo negro justo al completarse. */
+.footer__wordmark-fill {
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  background: linear-gradient(
+    100deg,
+    #e08aa2 0%,
+    var(--color-cream) 26%,
+    #ffffff 48%,
+    var(--color-cream) 70%,
+    #e08aa2 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 26px rgba(224, 138, 162, 0.35));
+  clip-path: inset(0 100% 0 0);
+}
+
+.footer__legal {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-md) var(--space-xl) var(--space-lg);
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  color: rgba(243, 231, 220, 0.3);
+}
+
+@media (max-width: 1023px) {
+  .footer__link-handle {
+    display: none;
+  }
+
+  .footer__links a {
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+/* Por debajo de esto el video ya no cabe al lado del texto sin encogerse:
+   la voz se pone encima y el video se queda con todo el ancho. */
+@media (max-width: 899px) {
+  .footer__scene {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+
+  /* En columna, `flex-basis` es la ALTURA: sin esto el video se estiraba */
+  .footer__panel {
+    flex: none;
+  }
+
+  .footer__aside {
+    flex: none;
+    padding-right: 0;
+    padding-bottom: var(--space-md);
+    text-align: center;
+  }
+
+  /* El hilo pasa de separar columnas a subrayar el bloque */
+  .footer__aside::after {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: 0;
+    width: 80px;
+    height: 1px;
+    margin-left: -40px;
+    background: linear-gradient(to right, transparent, rgba(224, 138, 162, 0.5), transparent);
+  }
+
+  .footer__aside-rule {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer {
+    padding-top: var(--space-2xl);
+  }
+
+  .footer__inner {
+    padding: 0 var(--space-md);
+  }
+
+  .footer__stage {
+    padding: var(--space-2xs);
+  }
+
+  .footer__play-disc {
+    width: 66px;
+    height: 66px;
+  }
+
+  .footer__sign {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer__top {
+    width: 92px;
+    height: 92px;
+  }
+
+  .footer__bands {
+    margin: var(--space-xl) 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__blob,
+  .footer__stage-halo,
+  .footer__status-dot,
+  .footer__play-ripple,
+  .footer__top-ring {
+    animation: none;
+  }
+
+  .footer__play-ripple {
+    display: none;
+  }
+
+  .footer__spotlight {
+    display: none;
+  }
+
+  /* Sin scroll que la rellene, la firma se enseña completa */
+  .footer__wordmark-fill {
+    clip-path: none;
+  }
+
+  .footer__wordmark-base {
+    opacity: 0;
+  }
+}

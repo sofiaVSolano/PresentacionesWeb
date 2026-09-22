@@ -1,0 +1,147 @@
+/* Etiqueta del semillero: una de las píldoras de la sección YO, pero viva.
+   El contorno lo pone la píldora que la contiene; aquí solo el contenido. */
+.padia-tag {
+  position: relative;
+  display: inline-flex;
+}
+
+.padia-tag__word {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: inherit;
+  transition: color var(--duration-fast) var(--ease-editorial);
+}
+
+.padia-tag__word:hover,
+.padia-tag__word[data-open='true'] {
+  color: rgb(224, 138, 162);
+}
+
+/* La célula: un puntito con membrana que respira, guiño al nombre "célula" */
+.padia-tag__cell {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.58em;
+  height: 0.58em;
+  border: 1.5px solid currentColor;
+  border-radius: 58% 42% 38% 62% / 55% 48% 52% 45%;
+  animation: padia-tag-cell 9s ease-in-out infinite;
+}
+
+.padia-tag__word[data-open='true'] .padia-tag__cell {
+  background: currentColor;
+}
+
+@keyframes padia-tag-cell {
+  0%,
+  100% {
+    border-radius: 58% 42% 38% 62% / 55% 48% 52% 45%;
+  }
+  33% {
+    border-radius: 44% 56% 62% 38% / 42% 60% 40% 58%;
+  }
+  66% {
+    border-radius: 62% 38% 46% 54% / 60% 40% 60% 40%;
+  }
+}
+
+/* ---- La credencial ---- */
+.padia-tag__card {
+  position: fixed;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding: var(--space-sm);
+  border: 1px solid rgba(243, 231, 220, 0.14);
+  border-radius: var(--radius-md);
+  background: linear-gradient(150deg, #241016, var(--color-void));
+  box-shadow: 0 24px 60px rgba(21, 3, 8, 0.5);
+  color: var(--color-cream);
+  pointer-events: none;
+  transform-origin: top left;
+  animation: padia-tag-in 0.28s var(--ease-editorial) both;
+}
+
+/* cuando no cabe debajo, se abre hacia arriba */
+.padia-tag__card[data-flipped='true'] {
+  margin-top: 0;
+  transform: translateY(calc(-100% - 10px));
+  transform-origin: bottom left;
+}
+
+@keyframes padia-tag-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* fina línea granate arriba: sello de credencial */
+.padia-tag__card::before {
+  content: '';
+  position: absolute;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-garnet), transparent);
+}
+
+.padia-tag__role {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(224, 138, 162);
+}
+
+.padia-tag__name {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.padia-tag__uni {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: rgba(243, 231, 220, 0.6);
+  white-space: normal;
+}
+
+.padia-tag__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(243, 231, 220, 0.12);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  color: rgb(224, 138, 162);
+}
+
+.padia-tag__link svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .padia-tag__cell {
+    animation: none;
+  }
+
+  .padia-tag__card {
+    animation: none;
+  }
+}

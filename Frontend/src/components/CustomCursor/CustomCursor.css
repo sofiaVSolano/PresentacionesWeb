@@ -1,0 +1,131 @@
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-editorial);
+}
+
+.cursor[data-visible='true'] {
+  opacity: 1;
+}
+
+.cursor-dot,
+.cursor-ring,
+.cursor-trail,
+.cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+/* Punto: preciso y pequeño. `difference` lo mantiene visible sobre crema y sobre oscuro. */
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: #ffffff;
+  mix-blend-mode: difference;
+  transition:
+    width 0.25s var(--ease-editorial),
+    height 0.25s var(--ease-editorial),
+    margin 0.25s var(--ease-editorial);
+}
+
+.cursor[data-active='true'] .cursor-dot {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+}
+
+/* Estela tipo cometa */
+.cursor-trail {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #d6708a;
+  opacity: 0;
+}
+
+/* Anillo fino: solo sobre elementos interactivos */
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  mix-blend-mode: difference;
+  opacity: 0;
+  scale: 0.4;
+  transition:
+    opacity 0.25s var(--ease-editorial),
+    scale 0.35s var(--ease-editorial);
+}
+
+.cursor[data-active='true'] .cursor-ring {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Etiqueta al lado del cursor, pequeña */
+.cursor-label {
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  background: rgba(21, 19, 21, 0.88);
+  border: 1px solid rgba(158, 38, 55, 0.7);
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-cream);
+  opacity: 0;
+  scale: 0.85;
+  transform-origin: left top;
+  transition:
+    opacity 0.2s var(--ease-editorial),
+    scale 0.25s var(--ease-editorial);
+}
+
+.cursor[data-active='true'] .cursor-label {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Onda de clic */
+.cursor-ripple {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  border: 1.5px solid #d6708a;
+  animation: cursor-ripple 0.5s var(--ease-editorial) forwards;
+}
+
+@keyframes cursor-ripple {
+  from {
+    transform: scale(0.3);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+body.cursor-active,
+body.cursor-active * {
+  cursor: none !important;
+}
+
+/* en campos de texto se mantiene el cursor de texto nativo */
+body.cursor-active input,
+body.cursor-active textarea {
+  cursor: text !important;
+}

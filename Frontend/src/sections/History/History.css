@@ -1,0 +1,433 @@
+/* Sección 05 — MI HISTORIA. Galería que se recorre de lado con el scroll.
+   Fondo oscuro: las fotos son el contenido y sobre oscuro respiran mejor. */
+.history {
+  --card-h: clamp(240px, 44vh, 420px);
+
+  position: relative;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 0%, rgba(74, 7, 16, 0.5), transparent 70%),
+    var(--color-carbon);
+}
+
+:where(.history) :where(h3, p, ol, li, figure, figcaption) {
+  margin: 0;
+  padding: 0;
+}
+
+.history ol {
+  list-style: none;
+}
+
+/* El escenario queda fijo mientras la galería pasa por delante */
+.history__stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-lg);
+  min-height: 100vh;
+  padding: var(--space-2xl) 0;
+  overflow: hidden;
+}
+
+.history__header {
+  flex-shrink: 0;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+.history__headline {
+  margin: var(--space-md) 0 var(--space-2xs);
+  font-size: clamp(1.75rem, 4.2vw, 3.2rem);
+  line-height: 1.08;
+}
+
+.history__lead {
+  max-width: 52ch;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+/* ---- La fila de tarjetas ---- */
+.history__track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  padding: 0 var(--space-xl);
+  will-change: transform;
+}
+
+.history__card {
+  flex-shrink: 0;
+}
+
+/* El relleno derecho de un contenedor flex no cuenta en `scrollWidth`, así que
+   el margen final lo pone la última tarjeta: si no, se queda cortada.
+   Además va holgado: sin ese aire, las últimas paradas nunca llegarían al punto
+   de foco y sus marcas se amontonarían al final del recorrido. */
+.history__card:last-child {
+  padding-right: max(var(--space-xl), calc(50vw - 200px));
+}
+
+.history__figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* `--ratio` llega desde el componente con la proporción real de cada foto, así
+   el ancho es exacto y no depende de que la imagen haya cargado.
+   `--near` vale 1 cuando la tarjeta está centrada y 0 en los bordes: con eso se
+   ilumina y crece la que estás mirando, y se apagan las demás. */
+.history__frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: var(--card-h);
+  width: min(calc(var(--card-h) * var(--ratio, 1)), 72vw, 820px);
+  overflow: hidden;
+  border: 1px solid rgba(243, 231, 220, 0.1);
+  border-radius: 18px;
+  background: rgba(243, 231, 220, 0.035);
+  transform: scale(calc(0.95 + 0.05 * var(--near, 1)));
+  filter: saturate(calc(0.45 + 0.55 * var(--near, 1))) brightness(calc(0.66 + 0.34 * var(--near, 1)));
+}
+
+/* Aro granate: solo se enciende en la tarjeta centrada */
+.history__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(224, 138, 162, 0.55);
+  opacity: var(--near, 0);
+  pointer-events: none;
+}
+
+.history__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+/* Diplomas y capturas: se ven enteros, con aire alrededor. Recortarlos
+   los dejaría ilegibles, que es justo lo contrario de lo que cuentan. */
+.history__frame[data-fit='contain'] {
+  padding: 14px;
+  background: rgba(243, 231, 220, 0.06);
+}
+
+.history__frame[data-fit='contain'] img {
+  object-fit: contain;
+}
+
+/* Todavía sin foto: la tarjeta se sostiene con tipografía */
+.history__frame[data-empty='true'] {
+  width: calc(var(--card-h) * 0.78);
+  background: linear-gradient(155deg, var(--color-burgundy), var(--color-wine) 60%, var(--color-void));
+  border-color: rgba(158, 38, 55, 0.5);
+}
+
+.history__poster {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.history__poster-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  line-height: 1.15;
+  color: var(--color-cream);
+}
+
+.history__poster-place {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(243, 231, 220, 0.65);
+}
+
+/* ---- Pie de cada tarjeta ---- */
+.history__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px var(--space-2xs);
+  max-width: 44ch;
+  opacity: calc(0.4 + 0.6 * var(--near, 1));
+}
+
+.history__num {
+  grid-row: 1 / 3;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: rgba(243, 231, 220, 0.28);
+}
+
+.history__result {
+  align-self: center;
+  justify-self: start;
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-garnet);
+  font-family: var(--font-body);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-cream);
+}
+
+.history__title {
+  grid-column: 2;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+.history__event {
+  grid-column: 2;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.history__detail {
+  grid-column: 2;
+  margin-top: var(--space-3xs);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(243, 231, 220, 0.5);
+}
+
+/* Crédito al equipo: va en todas las paradas, porque ninguna fue en solitario */
+.history__team {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: var(--space-2xs);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: rgb(224, 138, 162);
+}
+
+/* Dos figuras enlazadas, dibujadas con dos círculos que se tocan */
+.history__team-mark {
+  position: relative;
+  flex-shrink: 0;
+  width: 15px;
+  height: 8px;
+}
+
+.history__team-mark::before,
+.history__team-mark::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border: 1.4px solid currentColor;
+  border-radius: 50%;
+}
+
+.history__team-mark::before {
+  left: 0;
+}
+
+.history__team-mark::after {
+  right: 0;
+  opacity: 0.55;
+}
+
+/* ---- Tarjeta de cierre ---- */
+.history__card--closing {
+  display: flex;
+  align-items: center;
+}
+
+.history__closing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: min(400px, 68vw);
+  height: var(--card-h);
+  padding: var(--space-lg);
+  justify-content: center;
+  border: 1px solid rgba(158, 38, 55, 0.45);
+  border-radius: 18px;
+  background: linear-gradient(150deg, rgba(158, 38, 55, 0.22), rgba(33, 3, 8, 0.9));
+}
+
+.history__closing-kicker {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(224, 138, 162);
+}
+
+.history__closing-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  line-height: 1.28;
+  color: var(--color-cream);
+}
+
+/* ---- Barra de avance, con una marca por parada ---- */
+.history__progress {
+  position: relative;
+  flex-shrink: 0;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+.history__ticks {
+  position: absolute;
+  left: var(--space-xl);
+  right: var(--space-xl);
+  bottom: 0;
+  height: 0;
+}
+
+/* Cada marca se enciende cuando el recorrido llega a su parada */
+.history__tick {
+  position: absolute;
+  bottom: -5px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border: 1px solid rgba(243, 231, 220, 0.3);
+  border-radius: 50%;
+  background: var(--color-carbon);
+  transition:
+    background var(--duration-base) var(--ease-editorial),
+    border-color var(--duration-base) var(--ease-editorial),
+    transform var(--duration-base) var(--ease-editorial);
+}
+
+.history__tick[data-on='true'] {
+  background: var(--color-garnet);
+  border-color: rgb(224, 138, 162);
+  transform: scale(1.25);
+}
+
+.history__tick b {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(243, 231, 220, 0.3);
+  transition: color var(--duration-base) var(--ease-editorial);
+}
+
+.history__tick[data-on='true'] b {
+  color: rgb(224, 138, 162);
+}
+
+.history__progress::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: rgba(243, 231, 220, 0.12);
+}
+
+.history__rail {
+  height: 2px;
+  margin-bottom: -1px;
+  background: var(--color-garnet);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ---- En vertical: la galería se apila y la sección deja de fijarse ---- */
+@media (max-width: 859px) {
+  .history {
+    --card-h: clamp(220px, 52vh, 380px);
+  }
+
+  .history__stage {
+    min-height: 0;
+    padding: var(--space-2xl) 0;
+    overflow: visible;
+  }
+
+  .history__header,
+  .history__track {
+    padding: 0 var(--space-md);
+  }
+
+  .history__track {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xl);
+  }
+
+  .history__frame img {
+    max-width: 100%;
+  }
+
+  .history__frame[data-empty='true'] {
+    width: 100%;
+  }
+
+  .history__meta {
+    max-width: none;
+  }
+
+  /* En vertical no hay tarjeta "centrada": todas se ven al 100 % */
+  .history__frame {
+    transform: none;
+    filter: none;
+    width: 100%;
+  }
+
+  .history__frame::after {
+    opacity: 0;
+  }
+
+  .history__meta {
+    opacity: 1;
+  }
+
+  .history__ticks {
+    display: none;
+  }
+
+  .history__closing {
+    width: 100%;
+    height: auto;
+    padding: var(--space-lg) var(--space-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history__frame {
+    transform: none;
+    filter: none;
+  }
+
+  .history__frame::after {
+    opacity: 0;
+  }
+
+  .history__meta {
+    opacity: 1;
+  }
+}

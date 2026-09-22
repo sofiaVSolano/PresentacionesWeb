@@ -1,0 +1,460 @@
+/* Sección clara: invierte los tokens semánticos. Empieza en crema directamente,
+   porque la transformación termina fundida en ese mismo crema. */
+.about {
+  --color-text: var(--color-void);
+  --color-text-muted: rgba(33, 3, 8, 0.6);
+  --color-border: rgba(33, 3, 8, 0.12);
+  --card-bg: rgba(255, 252, 248, 0.82);
+  --card-shadow: 0 18px 50px rgba(74, 7, 16, 0.12), 0 2px 6px rgba(74, 7, 16, 0.06);
+
+  position: relative;
+  background: var(--color-cream);
+  color: var(--color-text);
+}
+
+/* ---- Escenario fijo: el video del telón ---- */
+.about__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  /* `sticky` crea su propio contexto de apilado: el canvas se mezcla con este fondo */
+  background: var(--color-cream);
+}
+
+/* La mezcla va en esta capa (no en el canvas): al animarse con transform crea su propio
+   contexto de apilado, y dentro de él el canvas no tendría con qué mezclarse. */
+.about__figure {
+  position: absolute;
+  inset: 0;
+  transform-origin: 35% 80%;
+  will-change: transform;
+  /* el blanco del video se vuelve el crema del sitio */
+  mix-blend-mode: multiply;
+}
+
+.about__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.about__intro {
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  color: var(--color-cream);
+  text-align: right;
+  pointer-events: none;
+}
+
+.about__intro-kicker {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.about__intro-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  line-height: 1;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+
+.about__intro-hint {
+  margin-top: var(--space-sm);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.125rem;
+  opacity: 0.8;
+  animation: about-nudge 2s ease-in-out infinite;
+}
+
+@keyframes about-nudge {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* ---- Contenido que pasa por encima del escenario ---- */
+.about__flow {
+  position: relative;
+  z-index: 2;
+  margin-top: -100vh;
+}
+
+/* Scroll en el que solo se abre el telón (la información aparece al terminar de abrirse) */
+.about__spacer {
+  height: calc((var(--curtain-scroll) + 0.7) * 100vh);
+}
+
+.about__content {
+  width: min(640px, 46vw);
+  margin-left: 51vw;
+  padding-bottom: var(--space-3xl);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.about__headline {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
+  line-height: 1.06;
+}
+
+/* ---- Tarjetas ---- */
+.about__card {
+  position: relative;
+  padding: var(--space-md);
+  border-radius: 22px;
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(10px);
+}
+
+.about__card-kicker,
+.about__block-title {
+  margin: 0 0 var(--space-xs);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-garnet);
+}
+
+/* Intro: tarjeta oscura, el mayor contraste de la sección */
+.about__card--intro {
+  background: linear-gradient(140deg, var(--color-burgundy), var(--color-wine) 55%, var(--color-void));
+  border-color: rgba(243, 231, 220, 0.12);
+  color: var(--color-cream);
+  box-shadow: 0 30px 70px rgba(74, 7, 16, 0.35);
+  overflow: hidden;
+}
+
+.about__card--intro::after {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 112, 138, 0.45), transparent 70%);
+  animation: about-glow 7s ease-in-out infinite;
+}
+
+@keyframes about-glow {
+  50% {
+    transform: translate(-30px, 30px) scale(1.15);
+  }
+}
+
+.about__card--intro .about__card-kicker {
+  color: rgb(214, 112, 138);
+}
+
+.about__intro-text {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.9vw, 1.625rem);
+  line-height: 1.35;
+}
+
+.about__chips {
+  position: relative;
+  z-index: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.about__chips li {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(243, 231, 220, 0.25);
+  background: rgba(243, 231, 220, 0.08);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+}
+
+/* La del semillero es la única que lleva a algún sitio: se marca en granate claro.
+   El relleno pasa al enlace para que toda la píldora sea zona pulsable. */
+.about__chips li.about__chip--padia {
+  padding: 0;
+  border-color: rgba(224, 138, 162, 0.45);
+  background: rgba(158, 38, 55, 0.18);
+  transition: border-color var(--duration-fast) var(--ease-editorial);
+}
+
+.about__chips li.about__chip--padia:hover {
+  border-color: rgba(224, 138, 162, 0.8);
+}
+
+.about__chip--padia .padia-tag__word {
+  padding: 5px 12px;
+}
+
+/* Cifras */
+.about__stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+.about__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-sm) var(--space-md);
+  transition:
+    transform 0.4s var(--ease-editorial),
+    box-shadow 0.4s var(--ease-editorial);
+}
+
+.about__stat:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(74, 7, 16, 0.18);
+}
+
+.about__stat-value {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  line-height: 1;
+  color: var(--color-burgundy);
+  font-variant-numeric: tabular-nums;
+}
+
+.about__stat-label {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* Pilares con inclinación 3D */
+.about__pillars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  perspective: 900px;
+}
+
+.about__pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-md) var(--space-sm);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.about__pillar::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-garnet), rgb(214, 112, 138));
+  transform: scaleX(0.25);
+  transform-origin: left;
+  transition: transform 0.5s var(--ease-editorial);
+}
+
+.about__pillar:hover::before {
+  transform: scaleX(1);
+}
+
+.about__pillar-num {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+}
+
+.about__pillar-icon svg {
+  width: 38px;
+  height: 38px;
+  fill: none;
+  stroke: var(--color-burgundy);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.5s var(--ease-editorial);
+}
+
+.about__pillar:hover .about__pillar-icon svg {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+.about__pillar-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.15;
+  color: var(--color-void);
+}
+
+.about__pillar-detail {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Cita */
+.about__quote {
+  margin: 0;
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-xl);
+  border-left: 4px solid var(--color-garnet);
+}
+
+.about__quote-mark {
+  position: absolute;
+  left: 16px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  fill: rgba(158, 38, 55, 0.4);
+}
+
+.about__quote p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  line-height: 1.45;
+}
+
+/* Lista con checks que se dibujan */
+.about__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.about__list li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: start;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.about__check {
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+  border-radius: 50%;
+  background: rgba(158, 38, 55, 0.12);
+}
+
+.about__check path {
+  fill: none;
+  stroke: var(--color-garnet);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* Datos */
+.about__facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+.about__fact {
+  padding: var(--space-sm);
+}
+
+.about__fact-icon {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 6px;
+  fill: none;
+  stroke: var(--color-garnet);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.about__fact dt {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.about__fact dd {
+  margin: 4px 0 0;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* ---- Pantallas verticales: la muñequita arriba, las tarjetas a lo ancho ---- */
+@media (max-aspect-ratio: 1/1) {
+  .about__intro {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: 12%;
+    translate: -50% 0;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about__content {
+    width: auto;
+    margin: 0 var(--space-md);
+  }
+
+  .about__pillars {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about__card {
+    padding: var(--space-sm);
+  }
+
+  .about__facts {
+    grid-template-columns: 1fr;
+  }
+
+  .about__quote {
+    padding-left: var(--space-lg);
+  }
+}
